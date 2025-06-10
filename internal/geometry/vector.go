@@ -46,10 +46,14 @@ func (v Vector) ToTuple() Tuple {
 	return NewTuple(v.X(), v.Y(), v.Z(), v.W())
 }
 
-func (v Vector) String() string {
-	return fmt.Sprintf("Vector(%f, %f, %f)", v.X(), v.Y(), v.Z())
+func (v Vector) Add(other HomogeneousTuple) Tuple {
+	return Add(v, other)
 }
 
 func (v Vector) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(v, other, epsilon...)
+}
+
+func (v Vector) String() string {
+	return fmt.Sprintf("Vector(%f, %f, %f)", v.X(), v.Y(), v.Z())
 }

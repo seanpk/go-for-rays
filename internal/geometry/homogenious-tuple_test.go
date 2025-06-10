@@ -85,3 +85,39 @@ func TestEquality(t *testing.T) {
 		})
 	}
 }
+
+func TestAddition(t *testing.T) {
+	tests := []struct {
+		name        string
+		a           HomogeneousTuple
+		b           HomogeneousTuple
+		expected    string
+		shouldPanic bool
+	}{
+		{name: "add point and vector", a: NewPoint(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)", shouldPanic: false},
+		{name: "add vector and point", a: NewVector(4, 5, 6), b: NewPoint(1, 2, 3), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)", shouldPanic: false},
+		{name: "add two vectors", a: NewVector(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)", shouldPanic: false},
+		{name: "add two points", a: NewPoint(1, 2, 3), b: NewPoint(4, 5, 6), expected: "", shouldPanic: true},
+		{name: "tuple point addition", a: NewTuple(1, 2, 3, 1), b: NewTuple(4, 5, 6, 1), expected: "", shouldPanic: true},
+		{name: "tuple vector addition", a: NewTuple(1, 2, 3, 0), b: NewTuple(4, 5, 6, 0), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)", shouldPanic: false},
+		{name: "tuple point and vector addition", a: NewTuple(1, 2, 3, 1), b: NewTuple(4, 5, 6, 0), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)", shouldPanic: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.shouldPanic {
+				defer func() {
+					if r := recover(); r == nil {
+						t.Errorf("Add() should have panicked")
+					}
+				}()
+			}
+			result := Add(tt.a, tt.b)
+			if !tt.shouldPanic {
+				if got := result.String(); got != tt.expected {
+					t.Errorf("Add() = %v, want %v", got, tt.expected)
+				}
+			}
+		})
+	}
+}

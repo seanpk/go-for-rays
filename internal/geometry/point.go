@@ -38,18 +38,22 @@ func (p Point) W() float64 {
 	return 1.0
 }
 
-func (p Point) ToVector() Vector {
-	return NewVector(p.X(), p.Y(), p.Z())
-}
-
 func (p Point) ToTuple() Tuple {
 	return NewTuple(p.X(), p.Y(), p.Z(), p.W())
 }
 
-func (p Point) String() string {
-	return fmt.Sprintf("Point(%f, %f, %f)", p.X(), p.Y(), p.Z())
+func (p Point) ToVector() Vector {
+	return NewVector(p.X(), p.Y(), p.Z())
+}
+
+func (p Point) Add(other HomogeneousTuple) Tuple {
+	return Add(p, other)
 }
 
 func (p Point) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(p, other, epsilon...)
+}
+
+func (p Point) String() string {
+	return fmt.Sprintf("Point(%f, %f, %f)", p.X(), p.Y(), p.Z())
 }

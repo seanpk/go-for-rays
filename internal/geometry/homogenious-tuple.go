@@ -19,14 +19,17 @@ func IsNearTo(a, b float64, epsilon ...float64) bool {
 	return math.Abs(a-b) < eps
 }
 
-// Can represent both points and vectors in 3D space
-// using homogeneous coordinates (x, y, z, w).
+// Can represent both points and vectors in 3D space using homogeneous coordinates (x, y, z, w).
 // A point has w=1, a vector has w=0.
 type HomogeneousTuple interface {
 	X() float64
 	Y() float64
 	Z() float64
 	W() float64
+
+	Add(HomogeneousTuple) Tuple
+	Equals(HomogeneousTuple, ...float64) bool
+	String() string
 }
 
 func IsPoint(t HomogeneousTuple) bool {
@@ -48,6 +51,13 @@ func NewTuple(x, y, z, w float64) Tuple {
 
 func ToTuple(t HomogeneousTuple) Tuple {
 	return NewTuple(t.X(), t.Y(), t.Z(), t.W())
+}
+
+func Add(a, b HomogeneousTuple) Tuple {
+	if IsPoint(a) && IsPoint(b) {
+		panic("Cannot add two points")
+	}
+	return NewTuple(a.X()+b.X(), a.Y()+b.Y(), a.Z()+b.Z(), a.W()+b.W())
 }
 
 func IsEqual(a, b HomogeneousTuple, epsilon ...float64) bool {
@@ -114,10 +124,14 @@ func (t Tuple) AsVector() Vector {
 	return ToVector(t)
 }
 
-func (t Tuple) String() string {
-	return fmt.Sprintf("Tuple(%f, %f, %f, %f)", t.X(), t.Y(), t.Z(), t.W())
+func (t Tuple) Add(other HomogeneousTuple) Tuple {
+	return Add(t, other)
 }
 
 func (t Tuple) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(t, other, epsilon...)
+}
+
+func (t Tuple) String() string {
+	return fmt.Sprintf("Tuple(%f, %f, %f, %f)", t.X(), t.Y(), t.Z(), t.W())
 }
