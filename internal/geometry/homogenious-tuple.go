@@ -28,7 +28,10 @@ type HomogeneousTuple interface {
 	W() float64
 
 	Add(HomogeneousTuple) Tuple
+	Subtract(HomogeneousTuple) Tuple
+
 	Equals(HomogeneousTuple, ...float64) bool
+
 	String() string
 }
 
@@ -62,6 +65,17 @@ func Add(a, b HomogeneousTuple) Tuple {
 	}
 
 	return NewTuple(a.X()+b.X(), a.Y()+b.Y(), a.Z()+b.Z(), w)
+}
+
+func Subtract(a, b HomogeneousTuple) Tuple {
+	var w float64
+	if IsPoint(a) && IsVector(b) || IsVector(a) && IsPoint(b) {
+		w = 1.0 // the result of subtraction with a point and a vector will be interpreted as a point
+	} else {
+		w = a.W() - b.W()
+	}
+
+	return NewTuple(a.X()-b.X(), a.Y()-b.Y(), a.Z()-b.Z(), w)
 }
 
 func IsEqual(a, b HomogeneousTuple, epsilon ...float64) bool {
@@ -130,6 +144,10 @@ func (t Tuple) AsVector() Vector {
 
 func (t Tuple) Add(other HomogeneousTuple) Tuple {
 	return Add(t, other)
+}
+
+func (t Tuple) Subtract(other HomogeneousTuple) Tuple {
+	return Subtract(t, other)
 }
 
 func (t Tuple) Equals(other HomogeneousTuple, epsilon ...float64) bool {

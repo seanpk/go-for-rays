@@ -50,6 +50,10 @@ func (p Point) Add(other HomogeneousTuple) Tuple {
 	return Add(p, other)
 }
 
+func (p Point) Subtract(other HomogeneousTuple) Tuple {
+	return Subtract(p, other)
+}
+
 func (p Point) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(p, other, epsilon...)
 }

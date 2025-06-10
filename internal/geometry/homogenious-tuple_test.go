@@ -94,10 +94,10 @@ func TestAddition(t *testing.T) {
 		b        HomogeneousTuple
 		expected string
 	}{
-		{name: "add point and vector", a: NewPoint(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)"},
-		{name: "add vector and point", a: NewVector(4, 5, 6), b: NewPoint(1, 2, 3), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)"},
-		{name: "add two vectors", a: NewVector(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
-		{name: "add two points", a: NewPoint(1, 2, 3), b: NewPoint(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
+		{name: "add point and vector (is a point)", a: NewPoint(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)"},
+		{name: "add vector and point (is a point)", a: NewVector(4, 5, 6), b: NewPoint(1, 2, 3), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)"},
+		{name: "add two vectors (is a vector)", a: NewVector(1, 2, 3), b: NewVector(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
+		{name: "add two points (is a vector)", a: NewPoint(1, 2, 3), b: NewPoint(4, 5, 6), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
 		{name: "tuple point addition", a: NewTuple(1, 2, 3, 1), b: NewTuple(4, 5, 6, 1), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
 		{name: "tuple vector addition", a: NewTuple(1, 2, 3, 0), b: NewTuple(4, 5, 6, 0), expected: "Tuple(5.000000, 7.000000, 9.000000, 0.000000)"},
 		{name: "tuple point and vector addition", a: NewTuple(1, 2, 3, 1), b: NewTuple(4, 5, 6, 0), expected: "Tuple(5.000000, 7.000000, 9.000000, 1.000000)"},
@@ -109,6 +109,33 @@ func TestAddition(t *testing.T) {
 			result := Add(tt.a, tt.b)
 			if got := result.String(); got != tt.expected {
 				t.Errorf("Add() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestSubtraction(t *testing.T) {
+	tests := []struct {
+		name     string
+		a        HomogeneousTuple
+		b        HomogeneousTuple
+		expected string
+	}{
+		{name: "subtract point from vector (is a point)", a: NewVector(5, 7, 9), b: NewPoint(4, 5, 6), expected: "Tuple(1.000000, 2.000000, 3.000000, 1.000000)"},
+		{name: "subtract vector from point (is a point)", a: NewPoint(5, 7, 9), b: NewVector(1, 2, 3), expected: "Tuple(4.000000, 5.000000, 6.000000, 1.000000)"},
+		{name: "subtract two vectors (is a vector)", a: NewVector(5, 7, 9), b: NewVector(4, 5, 6), expected: "Tuple(1.000000, 2.000000, 3.000000, 0.000000)"},
+		{name: "subtract two points (is a vector)", a: NewPoint(5, 7, 9), b: NewPoint(4, 5, 6), expected: "Tuple(1.000000, 2.000000, 3.000000, 0.000000)"},
+		{name: "tuple point subtraction", a: NewTuple(5, 7, 9, 1), b: NewTuple(4, 5, 6, 1), expected: "Tuple(1.000000, 2.000000, 3.000000, 0.000000)"},
+		{name: "tuple vector subtraction", a: NewTuple(5, 7, 9, 0), b: NewTuple(4, 5, 6, 0), expected: "Tuple(1.000000, 2.000000, 3.000000, 0.000000)"},
+		{name: "tuple point and vector subtraction", a: NewTuple(5, 7, 9, 1), b: NewTuple(4, 5, 6, 0), expected: "Tuple(1.000000, 2.000000, 3.000000, 1.000000)"},
+		{name: "subtraction of irregular tuples is allowed", a: NewTuple(5, 7, 9, 3), b: NewTuple(4, 5, 6, 5), expected: "Tuple(1.000000, 2.000000, 3.000000, -2.000000)"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := Subtract(tt.a, tt.b)
+			if got := result.String(); got != tt.expected {
+				t.Errorf("Subtract() = %v, want %v", got, tt.expected)
 			}
 		})
 	}

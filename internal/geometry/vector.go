@@ -50,6 +50,10 @@ func (v Vector) Add(other HomogeneousTuple) Tuple {
 	return Add(v, other)
 }
 
+func (v Vector) Subtract(other HomogeneousTuple) Tuple {
+	return Subtract(v, other)
+}
+
 func (v Vector) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(v, other, epsilon...)
 }
