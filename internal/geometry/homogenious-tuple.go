@@ -54,10 +54,14 @@ func ToTuple(t HomogeneousTuple) Tuple {
 }
 
 func Add(a, b HomogeneousTuple) Tuple {
+	var w float64
 	if IsPoint(a) && IsPoint(b) {
-		panic("Cannot add two points")
+		w = 0.0 // the result of adding two points will be interpreted as a vector
+	} else {
+		w = a.W() + b.W()
 	}
-	return NewTuple(a.X()+b.X(), a.Y()+b.Y(), a.Z()+b.Z(), a.W()+b.W())
+
+	return NewTuple(a.X()+b.X(), a.Y()+b.Y(), a.Z()+b.Z(), w)
 }
 
 func IsEqual(a, b HomogeneousTuple, epsilon ...float64) bool {
