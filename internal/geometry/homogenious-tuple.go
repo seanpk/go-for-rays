@@ -46,32 +46,8 @@ func NewTuple(x, y, z, w float64) Tuple {
 	}
 }
 
-func NewPoint(x, y, z float64) Point {
-	return Point{
-		x: x,
-		y: y,
-		z: z,
-	}
-}
-
-func NewVector(x, y, z float64) Vector {
-	return Vector{
-		x: x,
-		y: y,
-		z: z,
-	}
-}
-
 func ToTuple(t HomogeneousTuple) Tuple {
 	return NewTuple(t.X(), t.Y(), t.Z(), t.W())
-}
-
-func ToPoint(t HomogeneousTuple) Point {
-	return NewPoint(t.X(), t.Y(), t.Z())
-}
-
-func ToVector(t HomogeneousTuple) Vector {
-	return NewVector(t.X(), t.Y(), t.Z())
 }
 
 func IsEqual(a, b HomogeneousTuple, epsilon ...float64) bool {
@@ -144,80 +120,4 @@ func (t Tuple) String() string {
 
 func (t Tuple) Equals(other HomogeneousTuple, epsilon ...float64) bool {
 	return IsEqual(t, other, epsilon...)
-}
-
-// Point:
-// Represents a point in 3D space (x, y, z). The w value (always 1.0) is included for interoperability with Vectors and using homogeneous coordinates (x, y, z, w).
-type Point struct {
-	x, y, z float64
-}
-
-func (p Point) X() float64 {
-	return p.x
-}
-
-func (p Point) Y() float64 {
-	return p.y
-}
-
-func (p Point) Z() float64 {
-	return p.z
-}
-
-func (p Point) W() float64 {
-	return 1.0
-}
-
-func (p Point) ToVector() Vector {
-	return NewVector(p.X(), p.Y(), p.Z())
-}
-
-func (p Point) ToTuple() Tuple {
-	return NewTuple(p.X(), p.Y(), p.Z(), p.W())
-}
-
-func (p Point) String() string {
-	return fmt.Sprintf("Point(%f, %f, %f)", p.X(), p.Y(), p.Z())
-}
-
-func (p Point) Equals(other HomogeneousTuple, epsilon ...float64) bool {
-	return IsEqual(p, other, epsilon...)
-}
-
-// Vector:
-// Represents a vector in 3D space (x, y, z). The w value (always 0.0) is included for interoperability with Points and using homogeneous coordinates (x, y, z, w).
-type Vector struct {
-	x, y, z float64
-}
-
-func (v Vector) X() float64 {
-	return v.x
-}
-
-func (v Vector) Y() float64 {
-	return v.y
-}
-
-func (v Vector) Z() float64 {
-	return v.z
-}
-
-func (v Vector) W() float64 {
-	return 0.0
-}
-
-func (v Vector) ToPoint() Point {
-	return NewPoint(v.X(), v.Y(), v.Z())
-}
-
-func (v Vector) ToTuple() Tuple {
-	return NewTuple(v.X(), v.Y(), v.Z(), v.W())
-}
-
-func (v Vector) String() string {
-	return fmt.Sprintf("Vector(%f, %f, %f)", v.X(), v.Y(), v.Z())
-}
-
-func (v Vector) Equals(other HomogeneousTuple, epsilon ...float64) bool {
-	return IsEqual(v, other, epsilon...)
 }
