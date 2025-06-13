@@ -87,6 +87,22 @@ func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
 	)
 }
 
+func (t HomogeneousTuple) Negated() HomogeneousTuple {
+	var w float64
+	if t.IsPoint() || t.IsVector() {
+		w = t.W() // the negation of a point or vector keeps the same w value
+	} else {
+		w = -t.W() // for general tuples, negate the w value
+	}
+
+	return NewTuple(
+		-t.X(),
+		-t.Y(),
+		-t.Z(),
+		w,
+	)
+}
+
 func (t HomogeneousTuple) Subtract(other HomogeneousTuple) HomogeneousTuple {
 	var w float64
 	if t.IsPoint() && other.IsVector() || t.IsVector() && other.IsPoint() {

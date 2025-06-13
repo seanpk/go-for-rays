@@ -138,3 +138,29 @@ func TestSubtraction(t *testing.T) {
 		})
 	}
 }
+
+func TestNegation(t *testing.T) {
+	tests := []struct {
+		name     string
+		tuple    HomogeneousTuple
+		expected string
+	}{
+		{name: "negate point", tuple: NewPoint(1, 2, 3), expected: "Point(-1.000000, -2.000000, -3.000000)"},
+		{name: "negate vector", tuple: NewVector(1, 2, 3), expected: "Vector(-1.000000, -2.000000, -3.000000)"},
+		{name: "negate tuple point", tuple: NewTuple(1, 2, 3, 1), expected: "Point(-1.000000, -2.000000, -3.000000)"},
+		{name: "negate tuple vector", tuple: NewTuple(1, 2, 3, 0), expected: "Vector(-1.000000, -2.000000, -3.000000)"},
+		{name: "negate irregular tuple", tuple: NewTuple(1, 2, 3, 2), expected: "Tuple(-1.000000, -2.000000, -3.000000, -2.000000)"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rInverse := tt.tuple.Negated()
+			if got := rInverse.String(); got != tt.expected {
+				t.Errorf("Negated() = %v, want %v", got, tt.expected)
+			}
+			if rInverse.Equals(tt.tuple) {
+				t.Errorf("Negated() modified the original Tuple!")
+			}
+		})
+	}
+}
