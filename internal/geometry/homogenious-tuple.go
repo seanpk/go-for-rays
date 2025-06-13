@@ -2,6 +2,7 @@ package geometry
 
 import (
 	"fmt"
+	"math"
 )
 
 func NewHomogeneousTuple(x, y, z, w float64) HomogeneousTuple {
@@ -95,20 +96,17 @@ func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
 	return t.Multiply(1.0 / scalar)
 }
 
-func (t HomogeneousTuple) Negate() HomogeneousTuple {
-	var w float64
-	if t.IsPoint() || t.IsVector() {
-		w = t.W() // the negation of a point or vector keeps the same w value
-	} else {
-		w = -t.W() // for general tuples, negate the w value
+func (t HomogeneousTuple) Magnitude() float64 {
+	if t.IsPoint() {
+		return 0.0 // points do not have a magnitude
 	}
 
-	return NewTuple(
-		-t.X(),
-		-t.Y(),
-		-t.Z(),
-		w,
-	)
+	squareSum := t.X()*t.X() + t.Y()*t.Y() + t.Z()*t.Z()
+	if !t.IsVector() {
+		squareSum += t.W() * t.W() // for general tuples, include w in the magnitude calculation
+	}
+
+	return math.Sqrt(squareSum)
 }
 
 func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
@@ -123,6 +121,22 @@ func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
 		t.X()*scalar,
 		t.Y()*scalar,
 		t.Z()*scalar,
+		w,
+	)
+}
+
+func (t HomogeneousTuple) Negate() HomogeneousTuple {
+	var w float64
+	if t.IsPoint() || t.IsVector() {
+		w = t.W() // the negation of a point or vector keeps the same w value
+	} else {
+		w = -t.W() // for general tuples, negate the w value
+	}
+
+	return NewTuple(
+		-t.X(),
+		-t.Y(),
+		-t.Z(),
 		w,
 	)
 }

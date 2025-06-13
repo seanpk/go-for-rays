@@ -212,3 +212,25 @@ func TestDivision(t *testing.T) {
 		})
 	}
 }
+
+func TestMagnitude(t *testing.T) {
+	tests := []struct {
+		name     string
+		tuple    HomogeneousTuple
+		expected float64
+	}{
+		{name: "magnitude of point", tuple: NewPoint(2, 3, 6), expected: 0.0},
+		{name: "magnitude of vector", tuple: NewVector(2, 3, 6), expected: 7.0},
+		{name: "magnitude of tuple point", tuple: NewTuple(2, 3, 6, 1), expected: 0.0},
+		{name: "magnitude of tuple vector", tuple: NewTuple(2, 3, 6, 0), expected: 7.0},
+		{name: "magnitude of irregular tuple", tuple: NewTuple(0, 3, 4, 12), expected: 13.0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.tuple.Magnitude(); got != tt.expected {
+				t.Errorf("Magnitude() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
