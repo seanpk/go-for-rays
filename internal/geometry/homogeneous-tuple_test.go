@@ -234,3 +234,38 @@ func TestMagnitude(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalization(t *testing.T) {
+	tests := []struct {
+		name     string
+		tuple    HomogeneousTuple
+		panic    bool
+		expected *HomogeneousTuple
+	}{
+		{name: "normalize point", tuple: NewPoint(2, 3, 6), panic: true, expected: nil},
+		{name: "normalize vector", tuple: NewVector(2, 3, 6), panic: false, expected: &HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
+		{name: "normalize tuple point", tuple: NewTuple(2, 3, 6, 1), panic: true, expected: nil},
+		{name: "normalize tuple vector", tuple: NewTuple(2, 3, 6, 0), panic: false, expected: &HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
+		{name: "normalize irregular tuple", tuple: NewTuple(0, 3, 4, 12), panic: false, expected: &HomogeneousTuple{x: 0, y: 3.0 / 13, z: 4.0 / 13, w: 12.0 / 13}},
+		{name: "normalize zero vector", tuple: NewVector(0, 0, 0), panic: true, expected: nil},
+		{name: "normalize zero tuple", tuple: NewTuple(0, 0, 0, 0), panic: true, expected: nil},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if tt.panic {
+				defer func() {
+					if r := recover(); r == nil {
+						t.Errorf("Normalize() did not panic")
+					}
+				}()
+			}
+			result := tt.tuple.Normalize()
+			if tt.expected != nil {
+				if got := result.String(); got != tt.expected.String() {
+					t.Errorf("Normalize() = %v, want %v", got, tt.expected.String())
+				}
+			}
+		})
+	}
+}

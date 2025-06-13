@@ -141,6 +141,10 @@ func (t HomogeneousTuple) Negate() HomogeneousTuple {
 	)
 }
 
+func (t HomogeneousTuple) Normalize() HomogeneousTuple {
+	return t.Divide(t.Magnitude())
+}
+
 func (t HomogeneousTuple) Subtract(other HomogeneousTuple) HomogeneousTuple {
 	var w float64
 	if t.IsPoint() && other.IsVector() || t.IsVector() && other.IsPoint() {
