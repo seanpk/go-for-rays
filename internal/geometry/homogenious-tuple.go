@@ -2,49 +2,10 @@ package geometry
 
 import (
 	"fmt"
-	"math"
 )
 
-const EPSILON = 1e-6
-
-func epsilonOrDefault(epsilon ...float64) float64 {
-	if len(epsilon) > 0 && epsilon[0] > 0 {
-		return epsilon[0]
-	}
-	return EPSILON
-}
-
-func IsNearTo(a, b float64, epsilon ...float64) bool {
-	eps := epsilonOrDefault(epsilon...)
-	return math.Abs(a-b) < eps
-}
-
-// Can represent both points and vectors in 3D space using homogeneous coordinates (x, y, z, w).
-// A point has w=1, a vector has w=0.
-type HomogeneousTuple interface {
-	X() float64
-	Y() float64
-	Z() float64
-	W() float64
-
-	Add(HomogeneousTuple) Tuple
-	Subtract(HomogeneousTuple) Tuple
-
-	Equals(HomogeneousTuple, ...float64) bool
-
-	String() string
-}
-
-func IsPoint(t HomogeneousTuple) bool {
-	return IsNearTo(t.W(), 1.0)
-}
-
-func IsVector(t HomogeneousTuple) bool {
-	return IsNearTo(t.W(), 0.0)
-}
-
-func NewTuple(x, y, z, w float64) Tuple {
-	return Tuple{
+func NewHomogeneousTuple(x, y, z, w float64) HomogeneousTuple {
+	return HomogeneousTuple{
 		x: x,
 		y: y,
 		z: z,
@@ -52,108 +13,112 @@ func NewTuple(x, y, z, w float64) Tuple {
 	}
 }
 
-func ToTuple(t HomogeneousTuple) Tuple {
-	return NewTuple(t.X(), t.Y(), t.Z(), t.W())
+// Shorthand for creating a tuple with homogeneous coordinates (x, y, z, w).
+// This can be used for both points and vectors, depending on the value of w.
+// If w=1, it represents a point; if w=0, it represents a vector.
+// If w is neither 0 nor 1, it represents a general tuple.
+func NewTuple(x, y, z, w float64) HomogeneousTuple {
+	return NewHomogeneousTuple(x, y, z, w)
 }
 
-func Add(a, b HomogeneousTuple) Tuple {
-	var w float64
-	if IsPoint(a) && IsPoint(b) {
-		w = 0.0 // the result of adding two points will be interpreted as a vector
-	} else {
-		w = a.W() + b.W()
-	}
-
-	return NewTuple(a.X()+b.X(), a.Y()+b.Y(), a.Z()+b.Z(), w)
+// Creates a new point in 3D space with homogeneous coordinates (x, y, z).
+// The resulting tuple has w=1, indicating it is a point.
+func NewPoint(x, y, z float64) HomogeneousTuple {
+	return NewHomogeneousTuple(x, y, z, 1.0)
 }
 
-func Subtract(a, b HomogeneousTuple) Tuple {
-	var w float64
-	if IsPoint(a) && IsVector(b) || IsVector(a) && IsPoint(b) {
-		w = 1.0 // the result of subtraction with a point and a vector will be interpreted as a point
-	} else {
-		w = a.W() - b.W()
-	}
-
-	return NewTuple(a.X()-b.X(), a.Y()-b.Y(), a.Z()-b.Z(), w)
+// Creates a new vector in 3D space with homogeneous coordinates (x, y, z).
+// The resulting tuple has w=0, indicating it is a vector.
+func NewVector(x, y, z float64) HomogeneousTuple {
+	return NewHomogeneousTuple(x, y, z, 0.0)
 }
 
-func IsEqual(a, b HomogeneousTuple, epsilon ...float64) bool {
-	eps := epsilonOrDefault(epsilon...)
-	return IsNearTo(a.X(), b.X(), eps) &&
-		IsNearTo(a.Y(), b.Y(), eps) &&
-		IsNearTo(a.Z(), b.Z(), eps) &&
-		IsNearTo(a.W(), b.W(), eps)
-}
-
-// Tuple:
-// A generic implementation of a homogeneous tuple; it can represent both points and vectors.
-type Tuple struct {
+// Can represent both points and vectors in 3D space using homogeneous coordinates (x, y, z, w).
+// A point has w=1, a vector has w=0.
+type HomogeneousTuple struct {
 	x, y, z, w float64
 }
 
-func (t Tuple) X() float64 {
+func (t HomogeneousTuple) X() float64 {
 	return t.x
 }
 
-func (t Tuple) Y() float64 {
+func (t HomogeneousTuple) Y() float64 {
 	return t.y
 }
 
-func (t Tuple) Z() float64 {
+func (t HomogeneousTuple) Z() float64 {
 	return t.z
 }
 
-func (t Tuple) W() float64 {
+func (t HomogeneousTuple) W() float64 {
 	return t.w
 }
 
-func (t Tuple) IsPoint() bool {
-	return IsPoint(t)
+func (t HomogeneousTuple) IsPoint() bool {
+	return IsNearTo(t.w, 1.0)
 }
 
-func (t Tuple) IsVector() bool {
-	return IsVector(t)
+func (t HomogeneousTuple) IsVector() bool {
+	return IsNearTo(t.w, 0.0)
 }
 
-// Convert a Tuple to a Point
-func (t Tuple) ToPoint() Point {
-	return NewPoint(t.X(), t.Y(), t.Z())
+func ToPoint(t HomogeneousTuple) HomogeneousTuple {
+	return NewPoint(t.x, t.y, t.z)
 }
 
-// Convert a Tuple to a Vector
-func (t Tuple) ToVector() Vector {
-	return NewVector(t.X(), t.Y(), t.Z())
+func ToVector(t HomogeneousTuple) HomogeneousTuple {
+	return NewVector(t.x, t.y, t.z)
 }
 
-// Converts a Tuple to a Point; panics if the Tuple is not a point.
-func (t Tuple) AsPoint() Point {
-	if !t.IsPoint() {
-		panic("Tuple is not a point")
+func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
+	var w float64
+	if t.IsPoint() && other.IsPoint() {
+		w = 0.0 // the result of adding two points will be interpreted as a vector
+	} else {
+		w = t.W() + other.W()
 	}
-	return ToPoint(t)
+
+	return NewTuple(
+		t.X()+other.X(),
+		t.Y()+other.Y(),
+		t.Z()+other.Z(),
+		w,
+	)
 }
 
-// Converts a Tuple to a Vector; panics if the Tuple is not a vector.
-func (t Tuple) AsVector() Vector {
-	if !t.IsVector() {
-		panic("Tuple is not a vector")
+func (t HomogeneousTuple) Subtract(other HomogeneousTuple) HomogeneousTuple {
+	var w float64
+	if t.IsPoint() && other.IsVector() || t.IsVector() && other.IsPoint() {
+		w = 1.0 // the result of subtraction with a point and a vector will be interpreted as a point
+	} else {
+		w = t.W() - other.W()
 	}
-	return ToVector(t)
+
+	return NewTuple(
+		t.X()-other.X(),
+		t.Y()-other.Y(),
+		t.Z()-other.Z(),
+		w,
+	)
 }
 
-func (t Tuple) Add(other HomogeneousTuple) Tuple {
-	return Add(t, other)
+func (t HomogeneousTuple) Equals(other HomogeneousTuple, epsilon ...float64) bool {
+	eps := epsilonOrDefault(epsilon...)
+
+	return IsNearTo(t.X(), other.X(), eps) &&
+		IsNearTo(t.Y(), other.Y(), eps) &&
+		IsNearTo(t.Z(), other.Z(), eps) &&
+		IsNearTo(t.W(), other.W(), eps)
 }
 
-func (t Tuple) Subtract(other HomogeneousTuple) Tuple {
-	return Subtract(t, other)
-}
+func (t HomogeneousTuple) String() string {
+	if t.IsPoint() {
+		return fmt.Sprintf("Point(%f, %f, %f)", t.X(), t.Y(), t.Z())
+	}
+	if t.IsVector() {
+		return fmt.Sprintf("Vector(%f, %f, %f)", t.X(), t.Y(), t.Z())
+	}
 
-func (t Tuple) Equals(other HomogeneousTuple, epsilon ...float64) bool {
-	return IsEqual(t, other, epsilon...)
-}
-
-func (t Tuple) String() string {
 	return fmt.Sprintf("Tuple(%f, %f, %f, %f)", t.X(), t.Y(), t.Z(), t.W())
 }
