@@ -87,7 +87,15 @@ func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
 	)
 }
 
-func (t HomogeneousTuple) Negated() HomogeneousTuple {
+func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
+	if scalar == 0 {
+		panic("division by zero is not allowed")
+	}
+
+	return t.Multiply(1.0 / scalar)
+}
+
+func (t HomogeneousTuple) Negate() HomogeneousTuple {
 	var w float64
 	if t.IsPoint() || t.IsVector() {
 		w = t.W() // the negation of a point or vector keeps the same w value
@@ -99,6 +107,22 @@ func (t HomogeneousTuple) Negated() HomogeneousTuple {
 		-t.X(),
 		-t.Y(),
 		-t.Z(),
+		w,
+	)
+}
+
+func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
+	var w float64
+	if t.IsPoint() || t.IsVector() {
+		w = t.W() // the multiplication of a point or vector keeps the same w value
+	} else {
+		w = t.W() * scalar // for general tuples, multiply the w value
+	}
+
+	return NewTuple(
+		t.X()*scalar,
+		t.Y()*scalar,
+		t.Z()*scalar,
 		w,
 	)
 }

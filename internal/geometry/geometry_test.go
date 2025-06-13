@@ -154,12 +154,60 @@ func TestNegation(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			rInverse := tt.tuple.Negated()
+			rInverse := tt.tuple.Negate()
 			if got := rInverse.String(); got != tt.expected {
 				t.Errorf("Negated() = %v, want %v", got, tt.expected)
 			}
 			if rInverse.Equals(tt.tuple) {
 				t.Errorf("Negated() modified the original Tuple!")
+			}
+		})
+	}
+}
+
+func TestMultiplication(t *testing.T) {
+	tests := []struct {
+		name     string
+		tuple    HomogeneousTuple
+		factor   float64
+		expected string
+	}{
+		{name: "multiply point by scalar", tuple: NewPoint(1, 2, 3), factor: 2, expected: "Point(2.000000, 4.000000, 6.000000)"},
+		{name: "multiply vector by scalar", tuple: NewVector(1, 2, 3), factor: 2, expected: "Vector(2.000000, 4.000000, 6.000000)"},
+		{name: "multiply tuple point by scalar", tuple: NewTuple(1, 2, 3, 1), factor: 2, expected: "Point(2.000000, 4.000000, 6.000000)"},
+		{name: "multiply tuple vector by scalar", tuple: NewTuple(1, 2, 3, 0), factor: 2, expected: "Vector(2.000000, 4.000000, 6.000000)"},
+		{name: "multiply irregular tuple by scalar", tuple: NewTuple(1, 2, 3, 5), factor: 2, expected: "Tuple(2.000000, 4.000000, 6.000000, 10.000000)"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.tuple.Multiply(tt.factor)
+			if got := result.String(); got != tt.expected {
+				t.Errorf("Multiply() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}
+
+func TestDivision(t *testing.T) {
+	tests := []struct {
+		name     string
+		tuple    HomogeneousTuple
+		factor   float64
+		expected string
+	}{
+		{name: "divide point by scalar", tuple: NewPoint(2, 4, 6), factor: 2, expected: "Point(1.000000, 2.000000, 3.000000)"},
+		{name: "divide vector by scalar", tuple: NewVector(2, 4, 6), factor: 2, expected: "Vector(1.000000, 2.000000, 3.000000)"},
+		{name: "divide tuple point by scalar", tuple: NewTuple(2, 4, 6, 1), factor: 2, expected: "Point(1.000000, 2.000000, 3.000000)"},
+		{name: "divide tuple vector by scalar", tuple: NewTuple(2, 4, 6, 0), factor: 2, expected: "Vector(1.000000, 2.000000, 3.000000)"},
+		{name: "divide irregular tuple by scalar", tuple: NewTuple(2, 4, 6, 10), factor: 2, expected: "Tuple(1.000000, 2.000000, 3.000000, 5.000000)"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.tuple.Divide(tt.factor)
+			if got := result.String(); got != tt.expected {
+				t.Errorf("Divide() = %v, want %v", got, tt.expected)
 			}
 		})
 	}
