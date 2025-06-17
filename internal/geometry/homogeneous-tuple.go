@@ -72,6 +72,11 @@ func ToVector(t HomogeneousTuple) HomogeneousTuple {
 	return NewVector(t.x, t.y, t.z)
 }
 
+// Add returns a new HomogeneousTuple that is the sum of the two tuples.
+// If both tuples are points, the result is a vector (w=0).
+// If both tuples are vectors, the result is a vector (w=0).
+// If one tuple is a point and the other is a vector, the result is a point (w=1).
+// If both tuples are general tuples, the result is a general tuple with w being the sum of the two w values.
 func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
 	var w float64
 	if t.IsPoint() && other.IsPoint() {
@@ -88,6 +93,9 @@ func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
 	)
 }
 
+// Divide returns a new HomogeneousTuple that is the result of dividing each component by the scalar.
+// If the scalar is zero, it returns a tuple with NaN values for each component.
+// The behavior for points and vectors follows the same logic as Multiply.
 func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
 	if scalar == 0 {
 		return NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())
@@ -96,6 +104,10 @@ func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
 	return t.Multiply(1.0 / scalar)
 }
 
+// Magnitude returns the magnitude of the tuple.
+// For points, it returns 0.0 since points do not have a magnitude.
+// For vectors, it calculates the Euclidean norm (sqrt(x^2 + y^2 + z^2)).
+// For general tuples, it includes the w component in the magnitude calculation.
 func (t HomogeneousTuple) Magnitude() float64 {
 	if t.IsPoint() {
 		return 0.0 // points do not have a magnitude
@@ -109,6 +121,9 @@ func (t HomogeneousTuple) Magnitude() float64 {
 	return math.Sqrt(squareSum)
 }
 
+// Multiply returns a new HomogeneousTuple that is the result of multiplying each component by the scalar.
+// For points and vectors, it keeps the w value unchanged.
+// For general tuples, it multiplies the w value by the scalar.
 func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
 	var w float64
 	if t.IsPoint() || t.IsVector() {
@@ -125,6 +140,9 @@ func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
 	)
 }
 
+// Negate returns a new HomogeneousTuple with each component negated.
+// For points and vectors, it keeps the w value unchanged.
+// For general tuples, it negates the w value as well.
 func (t HomogeneousTuple) Negate() HomogeneousTuple {
 	var w float64
 	if t.IsPoint() || t.IsVector() {
@@ -141,10 +159,19 @@ func (t HomogeneousTuple) Negate() HomogeneousTuple {
 	)
 }
 
+// Normalize returns a new HomogeneousTuple that is the normalized version of the tuple.
+// For points, it returns a tuple with NaN values since points cannot be normalized.
+// For vectors, it divides each component by the magnitude of the vector.
+// For general tuples, it divides each component by the magnitude of the tuple, including the w component.
 func (t HomogeneousTuple) Normalize() HomogeneousTuple {
 	return t.Divide(t.Magnitude())
 }
 
+// Subtract returns a new HomogeneousTuple that is the result of subtracting the other tuple from this one.
+// If both tuples are points, the result is a vector (w=0).
+// If both tuples are vectors, the result is a vector (w=0).
+// If one tuple is a point and the other is a vector, the result is a point (w=1).
+// If both tuples are general tuples, the result is a general tuple with w being the difference of the two w values.
 func (t HomogeneousTuple) Subtract(other HomogeneousTuple) HomogeneousTuple {
 	var w float64
 	if t.IsPoint() && other.IsVector() || t.IsVector() && other.IsPoint() {
