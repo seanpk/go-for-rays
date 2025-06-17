@@ -90,7 +90,7 @@ func (t HomogeneousTuple) Add(other HomogeneousTuple) HomogeneousTuple {
 
 func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
 	if scalar == 0 {
-		panic("division by zero is not allowed")
+		return NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())
 	}
 
 	return t.Multiply(1.0 / scalar)

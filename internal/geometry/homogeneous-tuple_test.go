@@ -1,6 +1,7 @@
 package geometry
 
 import (
+	"math"
 	"testing"
 )
 
@@ -201,6 +202,7 @@ func TestDivision(t *testing.T) {
 		{name: "divide tuple point by scalar", tuple: NewTuple(2, 4, 6, 1), factor: 2, expected: "Point(1.000000, 2.000000, 3.000000)"},
 		{name: "divide tuple vector by scalar", tuple: NewTuple(2, 4, 6, 0), factor: 2, expected: "Vector(1.000000, 2.000000, 3.000000)"},
 		{name: "divide irregular tuple by scalar", tuple: NewTuple(2, 4, 6, 10), factor: 2, expected: "Tuple(1.000000, 2.000000, 3.000000, 5.000000)"},
+		{name: "divide by zero", tuple: NewTuple(2, 4, 6, 10), factor: 0, expected: "Tuple(NaN, NaN, NaN, NaN)"}, // Division by zero should return NaN
 	}
 
 	for _, tt := range tests {
@@ -239,32 +241,22 @@ func TestNormalization(t *testing.T) {
 	tests := []struct {
 		name     string
 		tuple    HomogeneousTuple
-		panic    bool
-		expected *HomogeneousTuple
+		expected HomogeneousTuple
 	}{
-		{name: "normalize point", tuple: NewPoint(2, 3, 6), panic: true, expected: nil},
-		{name: "normalize vector", tuple: NewVector(2, 3, 6), panic: false, expected: &HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
-		{name: "normalize tuple point", tuple: NewTuple(2, 3, 6, 1), panic: true, expected: nil},
-		{name: "normalize tuple vector", tuple: NewTuple(2, 3, 6, 0), panic: false, expected: &HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
-		{name: "normalize irregular tuple", tuple: NewTuple(0, 3, 4, 12), panic: false, expected: &HomogeneousTuple{x: 0, y: 3.0 / 13, z: 4.0 / 13, w: 12.0 / 13}},
-		{name: "normalize zero vector", tuple: NewVector(0, 0, 0), panic: true, expected: nil},
-		{name: "normalize zero tuple", tuple: NewTuple(0, 0, 0, 0), panic: true, expected: nil},
+		{name: "normalize point", tuple: NewPoint(2, 3, 6), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize vector", tuple: NewVector(2, 3, 6), expected: HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
+		{name: "normalize tuple point", tuple: NewTuple(2, 3, 6, 1), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize tuple vector", tuple: NewTuple(2, 3, 6, 0), expected: HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
+		{name: "normalize irregular tuple", tuple: NewTuple(0, 3, 4, 12), expected: HomogeneousTuple{x: 0, y: 3.0 / 13, z: 4.0 / 13, w: 12.0 / 13}},
+		{name: "normalize zero vector", tuple: NewVector(0, 0, 0), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize zero tuple", tuple: NewTuple(0, 0, 0, 0), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if tt.panic {
-				defer func() {
-					if r := recover(); r == nil {
-						t.Errorf("Normalize() did not panic")
-					}
-				}()
-			}
 			result := tt.tuple.Normalize()
-			if tt.expected != nil {
-				if got := result.String(); got != tt.expected.String() {
-					t.Errorf("Normalize() = %v, want %v", got, tt.expected.String())
-				}
+			if got := result.String(); got != tt.expected.String() {
+				t.Errorf("Normalize() = %v, want %v", got, tt.expected.String())
 			}
 		})
 	}
