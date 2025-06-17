@@ -22,6 +22,11 @@ func NewTuple(x, y, z, w float64) HomogeneousTuple {
 	return NewHomogeneousTuple(x, y, z, w)
 }
 
+// Returns a tuple with NaN values for each component.
+func NaNTuple() HomogeneousTuple {
+	return NewHomogeneousTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())
+}
+
 // Creates a new point in 3D space with homogeneous coordinates (x, y, z).
 // The resulting tuple has w=1, indicating it is a point.
 func NewPoint(x, y, z float64) HomogeneousTuple {
@@ -138,7 +143,7 @@ func (t HomogeneousTuple) Multiply(scalar float64) HomogeneousTuple {
 // The behavior for points and vectors follows the same logic as Multiply.
 func (t HomogeneousTuple) Divide(scalar float64) HomogeneousTuple {
 	if scalar == 0 {
-		return NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())
+		return NaNTuple()
 	}
 
 	return t.Multiply(1.0 / scalar)
@@ -212,6 +217,10 @@ func (t HomogeneousTuple) Equals(other HomogeneousTuple, epsilon ...float64) boo
 		IsNearTo(t.Y(), other.Y(), eps) &&
 		IsNearTo(t.Z(), other.Z(), eps) &&
 		IsNearTo(t.W(), other.W(), eps)
+}
+
+func (t HomogeneousTuple) IsNaN() bool {
+	return math.IsNaN(t.X()) || math.IsNaN(t.Y()) || math.IsNaN(t.Z()) || math.IsNaN(t.W())
 }
 
 func (t HomogeneousTuple) String() string {

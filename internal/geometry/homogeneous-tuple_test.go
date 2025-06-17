@@ -243,13 +243,13 @@ func TestNormalization(t *testing.T) {
 		tuple    HomogeneousTuple
 		expected HomogeneousTuple
 	}{
-		{name: "normalize point", tuple: NewPoint(2, 3, 6), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize point", tuple: NewPoint(2, 3, 6), expected: NaNTuple()},
 		{name: "normalize vector", tuple: NewVector(2, 3, 6), expected: HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
-		{name: "normalize tuple point", tuple: NewTuple(2, 3, 6, 1), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize tuple point", tuple: NewTuple(2, 3, 6, 1), expected: NaNTuple()},
 		{name: "normalize tuple vector", tuple: NewTuple(2, 3, 6, 0), expected: HomogeneousTuple{x: 2.0 / 7, y: 3.0 / 7, z: 6.0 / 7, w: 0}},
 		{name: "normalize irregular tuple", tuple: NewTuple(0, 3, 4, 12), expected: HomogeneousTuple{x: 0, y: 3.0 / 13, z: 4.0 / 13, w: 12.0 / 13}},
-		{name: "normalize zero vector", tuple: NewVector(0, 0, 0), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
-		{name: "normalize zero tuple", tuple: NewTuple(0, 0, 0, 0), expected: NewTuple(math.NaN(), math.NaN(), math.NaN(), math.NaN())},
+		{name: "normalize zero vector", tuple: NewVector(0, 0, 0), expected: NaNTuple()},
+		{name: "normalize zero tuple", tuple: NewTuple(0, 0, 0, 0), expected: NaNTuple()},
 	}
 
 	for _, tt := range tests {
