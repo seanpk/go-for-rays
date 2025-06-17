@@ -288,3 +288,41 @@ func TestDotProduct(t *testing.T) {
 		})
 	}
 }
+
+func TestCrossProduct(t *testing.T) {
+	tests := []struct {
+		name     string
+		a        HomogeneousTuple
+		b        HomogeneousTuple
+		expected HomogeneousTuple
+	}{
+		{name: "cross product of two vectors", a: NewVector(1, 2, 3), b: NewVector(2, 3, 4), expected: NewVector(-1, 2, -1)},
+		{name: "cross product of tuple vectors", a: NewTuple(1, 2, 3, 0), b: NewTuple(4, 5, 6, 0), expected: NewVector(-3, 6, -3)},
+		{name: "cross product of irregular tuples", a: NewTuple(1, 2, 3, 2), b: NewTuple(4, 5, 6, 3), expected: NaNTuple()},
+		{name: "cross product of point and vector", a: NewPoint(1, 2, 3), b: NewVector(4, 5, 6), expected: NaNTuple()},
+		{name: "cross product of two points", a: NewPoint(1, 2, 3), b: NewPoint(4, 5, 6), expected: NaNTuple()},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.a.CrossProduct(tt.b)
+
+			if tt.expected.IsNaN() {
+				if !result.IsNaN() {
+					t.Errorf("CrossProduct() = %v, want %v", result.String(), tt.expected.String())
+				}
+				return
+			}
+
+			if !result.Equals(tt.expected) {
+				t.Errorf("CrossProduct() = %v, want %v", result.String(), tt.expected.String())
+			}
+
+			reverseResult := tt.b.CrossProduct(tt.a)
+			negatedExpected := tt.expected.Negate()
+			if !reverseResult.Equals(negatedExpected) {
+				t.Errorf("CrossProduct() reverse = %v, want %v", reverseResult.String(), negatedExpected.String())
+			}
+		})
+	}
+}

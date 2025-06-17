@@ -185,6 +185,18 @@ func (t HomogeneousTuple) DotProduct(other HomogeneousTuple) float64 {
 	return threeProduct + t.W()*other.W()
 }
 
+func (t HomogeneousTuple) CrossProduct(other HomogeneousTuple) HomogeneousTuple {
+	if !(t.IsVector() && other.IsVector()) {
+		return NaNTuple()
+	}
+
+	return NewVector(
+		t.Y()*other.Z()-t.Z()*other.Y(),
+		t.Z()*other.X()-t.X()*other.Z(),
+		t.X()*other.Y()-t.Y()*other.X(),
+	)
+}
+
 // Magnitude returns the magnitude of the tuple.
 // For points, it returns 0.0 since points do not have a magnitude.
 // For vectors, it calculates the Euclidean norm (sqrt(x^2 + y^2 + z^2)).
