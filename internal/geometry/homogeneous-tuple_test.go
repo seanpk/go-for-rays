@@ -261,3 +261,30 @@ func TestNormalization(t *testing.T) {
 		})
 	}
 }
+
+func TestDotProduct(t *testing.T) {
+	tests := []struct {
+		name     string
+		a        HomogeneousTuple
+		b        HomogeneousTuple
+		expected float64
+	}{
+		{name: "dot product of two vectors", a: NewVector(1, 2, 3), b: NewVector(4, 5, 6), expected: 32.0},
+		{name: "dot product of point and vector", a: NewPoint(1, 2, 3), b: NewVector(4, 5, 6), expected: math.NaN()},
+		{name: "dot product of two points", a: NewPoint(1, 2, 3), b: NewPoint(4, 5, 6), expected: math.NaN()},
+		{name: "dot product of tuple vectors", a: NewTuple(1, 2, 3, 0), b: NewTuple(4, 5, 6, 0), expected: 32.0},
+		{name: "dot product of irregular tuples", a: NewTuple(1, 2, 3, 2), b: NewTuple(4, 5, 6, 3), expected: 38.0},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := tt.a.DotProduct(tt.b)
+			if math.IsNaN(result) && math.IsNaN(tt.expected) {
+				return // Both results are NaN, which is acceptable
+			}
+			if got := result; got != tt.expected {
+				t.Errorf("DotProduct() = %v, want %v", got, tt.expected)
+			}
+		})
+	}
+}

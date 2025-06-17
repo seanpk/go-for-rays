@@ -163,6 +163,23 @@ func (t HomogeneousTuple) Negate() HomogeneousTuple {
 	)
 }
 
+// DotProduct calculates the dot product of two HomogeneousTuples.
+// If either tuple is a point, it returns NaN since points do not have a meaningful dot product.
+// If both tuples are vectors, it calculates the dot product as the sum of the products of their components (x1*x2 + y1*y2 + z1*z2).
+// If either tuples is a general tuple, it includes the w component in the calculation (x1*x2 + y1*y2 + z1*z2 + w1*w2).
+func (t HomogeneousTuple) DotProduct(other HomogeneousTuple) float64 {
+	if t.IsPoint() || other.IsPoint() {
+		return math.NaN()
+	}
+
+	threeProduct := t.X()*other.X() + t.Y()*other.Y() + t.Z()*other.Z()
+	if t.IsVector() && other.IsVector() {
+		return threeProduct
+	}
+
+	return threeProduct + t.W()*other.W()
+}
+
 // Magnitude returns the magnitude of the tuple.
 // For points, it returns 0.0 since points do not have a magnitude.
 // For vectors, it calculates the Euclidean norm (sqrt(x^2 + y^2 + z^2)).
