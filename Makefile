@@ -2,7 +2,7 @@
 
 # Variables
 BINARY_NAME=go-for-rays
-MAIN_PATH=./cmd/go-for-rays
+MAIN_PATH=./main.go
 
 # Default target
 .PHONY: all
